@@ -4,4 +4,11 @@ Horetska Daryna - https://youtu.be/pKy9tjriv5M
 
 -------------------------------------------------------------------------------------------------------------------------
 
-TO START A PROGRAM, WRITE IN YOUR TERMINL: /usr/local/bin/python3 panorama_stitching.py image1.jpg image2.jpg
+F
+
+TO START A PROGRAM: 
+
+install numpy and opencv-python
+
+write in the terminal
+python panorama_stitching.py image1.jpg image2.jpg
