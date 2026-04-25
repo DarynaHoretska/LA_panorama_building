@@ -21,14 +21,14 @@ Result:
 
 | image1 | image2 |
 |----------|----------|
-| <img width="500" alt="image" src="https://github.com/user-attachments/assets/df0bf638-6a5a-4103-8ed9-659a9c6fedfd" /> | <img width="960" height="1280" alt="image" src="https://github.com/user-attachments/assets/38aa7709-f416-4384-9b3a-cf846d08688d" />
+| <img width="500" alt="image" src="https://github.com/user-attachments/assets/df0bf638-6a5a-4103-8ed9-659a9c6fedfd" /> | <img width="500" alt="image" src="https://github.com/user-attachments/assets/38aa7709-f416-4384-9b3a-cf846d08688d" />
  |
 Result: 
 <img width="1000" alt="image" src="https://github.com/user-attachments/assets/62821900-6c55-43f2-b53f-350a4a9c57a3" />
 
 | image1 | image2 |
 |----------|----------|
-|<img width="960" height="1280" alt="image" src="https://github.com/user-attachments/assets/dba84615-abf2-43ee-b456-d582f32c446c" /> | <img width="960" height="1280" alt="image" src="https://github.com/user-attachments/assets/12d49b82-987b-4298-9fc0-b5d37a2a35dc" />|
+|<img width="500" alt="image" src="https://github.com/user-attachments/assets/dba84615-abf2-43ee-b456-d582f32c446c" /> | <img width="500" alt="image" src="https://github.com/user-attachments/assets/12d49b82-987b-4298-9fc0-b5d37a2a35dc" />|
 Result: 
 <img width="1000" alt="image" src="https://github.com/user-attachments/assets/b0e569a4-5286-48eb-aaa9-1d51a9d8e8a4" />
 
