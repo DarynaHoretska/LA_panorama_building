@@ -275,6 +275,40 @@ def stitch_pair(path1: str, path2: str, output_path: str = "panorama.jpg", metho
     return panorama
 
 
+def stitch_multiple(image_paths: list, output_path: str = "panorama_full.jpg",
+                    method: str = "sift", use_ransac: bool = True) -> np.ndarray:
+    """
+    Stitches a list of images sequentially from left to right.
+    """
+    if len(image_paths) < 2:
+        raise ValueError("At least 2 images are required")
+
+    temp_path = "_tmp_pano.jpg"
+
+    print(f"\n--- Stitching image 1/ {len(image_paths)} with image 2/{len(image_paths)} ---")
+    result = stitch_pair(
+        image_paths[0],
+        image_paths[1],
+        output_path=temp_path,
+        method=method,
+        use_ransac=use_ransac,
+    )
+
+    for i in range(2, len(image_paths)):
+        print(f"\n--- Adding image {i + 1}/{len(image_paths)} ---")
+        result = stitch_pair(
+            temp_path,
+            image_paths[i],
+            output_path=temp_path,
+            method=method,
+            use_ransac=use_ransac,
+        )
+
+    cv2.imwrite(output_path, result)
+    print(f"\nFinal panorama saved to: {output_path}")
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Panorama stitching via Linear Algebra (DLT + SVD)"
@@ -292,13 +326,23 @@ def main():
     args = parser.parse_args()
 
     if len(args.images) == 1:
-        print("There should be al least 2 images")
+        print("There should be at least 2 images")
         sys.exit(1)
     elif len(args.images) == 2:
-        stitch_pair(args.images[0], args.images[1], output_path=args.output, method=args.method, 
-                    use_ransac=not args.no_ransac)
+        stitch_pair(
+            args.images[0],
+            args.images[1],
+            output_path=args.output,
+            method=args.method,
+            use_ransac=not args.no_ransac,
+        )
     else:
-        print("To be continued")
+        stitch_multiple(
+            args.images,
+            output_path=args.output,
+            method=args.method,
+            use_ransac=not args.no_ransac,
+        )
 
 
 if __name__ == "__main__":
