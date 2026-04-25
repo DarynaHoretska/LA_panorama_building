@@ -27,6 +27,7 @@ Result:
 Result: 
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/62821900-6c55-43f2-b53f-350a4a9c57a3" />
 
+
 | image1 | image2 |
 |----------|----------|
 |<img width="500" alt="image" src="https://github.com/user-attachments/assets/dba84615-abf2-43ee-b456-d582f32c446c" /> | <img width="500" alt="image" src="https://github.com/user-attachments/assets/12d49b82-987b-4298-9fc0-b5d37a2a35dc" />|
