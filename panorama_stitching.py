@@ -245,7 +245,7 @@ def stitch_pair(path1: str, path2: str, output_path: str = "panorama.jpg", metho
 
     if use_ransac:
         H, inliers = ransac_homography(src_points, dst_points)
-        print(f"  RANSAC: {inliers.sum()}/{len(inliers)} інлаєрів")
+        print(f"  RANSAC: {inliers.sum()}/{len(inliers)} inliers")
         err = reprojection_error(H, src_points[inliers], dst_points[inliers])
     else:
         H = estimate_homography(src_points, dst_points)
