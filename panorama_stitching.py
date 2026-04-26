@@ -31,6 +31,38 @@ def build_A(src: np.ndarray, dst: np.ndarray) -> np.ndarray:
 
     return A
 
+
+import numpy as np
+
+def manual_svd(A):
+    # 1. Compute A*A^T and A^T*A
+    AAT = np.dot(A, A.T)
+    ATA = np.dot(A.T, A)
+    
+    # 2. Compute eigenvalues and eigenvectors for U (from A*A^T)
+    evals_u, evecs_u = np.linalg.eig(AAT)
+    # Sort by eigenvalues descending
+    idx_u = np.argsort(evals_u)[::-1]
+    U = evecs_u[:, idx_u]
+    
+    # 3. Compute eigenvalues and eigenvectors for V (from A^T*A)
+    evals_v, evecs_v = np.linalg.eig(ATA)
+    # Sort by eigenvalues descending
+    idx_v = np.argsort(evals_v)[::-1]
+    V = evecs_v[:, idx_v]
+    
+    # 4. Compute Singular Values (Square roots of non-negative eigenvalues)
+    # Using evals_v as they correspond to A^T*A
+    singular_values = np.sqrt(np.clip(evals_v[idx_v], 0, None))
+    
+    return U, singular_values, V.T
+
+# Example usage
+A = np.array([[1, 2], [3, 4], [5, 6]])
+U, s, VT = manual_svd(A)
+
+
+
 def estimate_homography(src_points: np.ndarray, dst_points: np.ndarray) -> np.ndarray:
     assert len(src_points) >= 4, "Give more that 4 points"
 
@@ -39,7 +71,7 @@ def estimate_homography(src_points: np.ndarray, dst_points: np.ndarray) -> np.nd
 
     A = build_A(src_norm, dst_norm)
 
-    _, _, Vt = np.linalg.svd(A)
+    _, _, Vt = manual_svd(A)
     h_hat = Vt[-1]
     H_norm = h_hat.reshape(3, 3)
     H = np.linalg.inv(Tp) @ H_norm @ T
@@ -175,6 +207,7 @@ def detect_and_match(img1_gray: np.ndarray, img2_gray: np.ndarray,
         try:
             detector = cv2.SIFT_create()
         except AttributeError:
+            # pylint: disable=no-member
             detector = cv2.xfeatures2d.SIFT_create()
         norm = cv2.NORM_L2
     else:
@@ -258,15 +291,8 @@ def stitch_pair(path1: str, path2: str, output_path: str = "panorama.jpg", metho
     canvas_shape, (ox, oy) = compute_canvas(img1, img2, H)
     print(f"  Canvas: {canvas_shape[1]} × {canvas_shape[0]} px,  offset=({ox},{oy})")
 
-    print("\nTesting output for our implementation:")
-    print(f"{total_matches} matches")
-    if inlier_count is not None:
-        print(f"{inlier_count}/{total_matches} inliers")
-    else:
-        print("RANSAC disabled: inliers not computed")
-    print(f"Reprojection error: {err:.4f} px")
-    print(f"Canvas: {canvas_shape[1]} × {canvas_shape[0]} px")
 
+   
     T_offset = np.array([
         [1, 0, ox],
         [0, 1, oy],
@@ -368,9 +394,6 @@ def main():
                         help="Use OpenCV full built-in Stitcher pipeline for comparison")
     args = parser.parse_args()
 
-    if args.opencv_full:
-        stitch_opencv_full(args.images, output_path=args.output)
-        return
 
     if len(args.images) == 1:
         print("There should be at least 2 images")
