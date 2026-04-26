@@ -242,18 +242,30 @@ def stitch_pair(path1: str, path2: str, output_path: str = "panorama.jpg", metho
     gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
     src_points, dst_points = detect_and_match(gray2, gray1, method=method)
+    total_matches = len(src_points)
 
     if use_ransac:
         H, inliers = ransac_homography(src_points, dst_points)
-        print(f"  RANSAC: {inliers.sum()}/{len(inliers)} inliers")
+        inlier_count = int(inliers.sum())
+        print(f"  RANSAC: {inlier_count}/{len(inliers)} inliers")
         err = reprojection_error(H, src_points[inliers], dst_points[inliers])
     else:
         H = estimate_homography(src_points, dst_points)
+        inlier_count = None
         err = reprojection_error(H, src_points, dst_points)
     print(f"  Reprojection error: {err:.4f} px")
 
     canvas_shape, (ox, oy) = compute_canvas(img1, img2, H)
     print(f"  Canvas: {canvas_shape[1]} × {canvas_shape[0]} px,  offset=({ox},{oy})")
+
+    print("\nTesting output for our implementation:")
+    print(f"{total_matches} matches")
+    if inlier_count is not None:
+        print(f"{inlier_count}/{total_matches} inliers")
+    else:
+        print("RANSAC disabled: inliers not computed")
+    print(f"Reprojection error: {err:.4f} px")
+    print(f"Canvas: {canvas_shape[1]} × {canvas_shape[0]} px")
 
     T_offset = np.array([
         [1, 0, ox],
@@ -309,6 +321,35 @@ def stitch_multiple(image_paths: list, output_path: str = "panorama_full.jpg",
     return result
 
 
+# ---- Full OpenCV built-in Stitcher pipeline for comparison ----
+def stitch_opencv_full(image_paths: list, output_path: str = "opencv_full.jpg") -> np.ndarray:
+    """
+    Full OpenCV panorama stitching baseline.
+    This uses OpenCV's built-in Stitcher pipeline and is intended only for testing
+    and comparison with our manual DLT + SVD implementation.
+    """
+    if len(image_paths) < 2:
+        raise ValueError("At least 2 images are required")
+
+    images = []
+    for path in image_paths:
+        img = cv2.imread(path)
+        if img is None:
+            raise FileNotFoundError(f"Can't open {path}")
+        images.append(img)
+
+    stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA)
+    status, panorama = stitcher.stitch(images)
+
+    if status != cv2.Stitcher_OK:
+        raise RuntimeError(f"OpenCV Stitcher failed with status code {status}")
+
+    cv2.imwrite(output_path, panorama)
+    print(f"\nOpenCV full Stitcher panorama saved to: {output_path}")
+    print(f"OpenCV full Stitcher output size: {panorama.shape[1]} × {panorama.shape[0]} px")
+    return panorama
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Panorama stitching via Linear Algebra (DLT + SVD)"
@@ -323,7 +364,13 @@ def main():
                         help="Do not use RANSAC")
     parser.add_argument("--test", action="store_true",
                         help="Run the synthetic test and exit")
+    parser.add_argument("--opencv-full", action="store_true",
+                        help="Use OpenCV full built-in Stitcher pipeline for comparison")
     args = parser.parse_args()
+
+    if args.opencv_full:
+        stitch_opencv_full(args.images, output_path=args.output)
+        return
 
     if len(args.images) == 1:
         print("There should be at least 2 images")
@@ -347,3 +394,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Our implementation:
+# python panorama_stitching.py 41.jpeg 42.jpeg --output ours_pair.jpg --method sift
+# python panorama_stitching.py image1.jpg image2.jpg image3.jpg --output ours_multiple.jpg --method sift
+# Full OpenCV built-in pipeline for comparison:
+# python panorama_stitching.py image21.jpg image22.jpg --output opencv_full_pair.jpg --opencv-full
+# python panorama_stitching.py image1.jpg image2.jpg image3.jpg --output opencv_full_multiple.jpg --opencv-full
