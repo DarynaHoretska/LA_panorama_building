@@ -3,9 +3,6 @@ Vasylchenko Vlad - https://youtu.be/Waf98fpNs1E
 Horetska Daryna - https://youtu.be/pKy9tjriv5M
 Pechenenko Yaryna - https://youtu.be/sQtxfVANVlY?si=7oAZFAnn383HZ6Lf
 
--------------------------------------------------------------------------------------------------------------------------
-
-
 TO START A PROGRAM: 
 
 install numpy and opencv-python
@@ -35,3 +32,11 @@ Result:
 Result: 
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/b0e569a4-5286-48eb-aaa9-1d51a9d8e8a4" />
 
+
+Multiple stitching:
+| image1 | image2 | image3 |
+|----------|----------|----------|
+| <img width="500" alt="image" src="https://github.com/user-attachments/assets/55f8647e-ce99-47e5-8327-587f71f0d08c" /> | <img width="500" alt="image" src="https://github.com/user-attachments/assets/48f4ec29-067b-40b4-b062-bb6c1325d1b2" /> |<img width="500" alt="image" src="https://github.com/user-attachments/assets/a1c088ef-ba14-4280-ac5a-dc846f511a72" /> |
+
+Result:
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/28a45e21-9f1e-4b2f-8c48-12e249358964" />
